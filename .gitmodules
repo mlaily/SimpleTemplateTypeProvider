@@ -1,0 +1,4 @@
+[submodule "FSharp.TypeProviders.SDK"]
+	path = FSharp.TypeProviders.SDK
+	url = https://github.com/fsprojects/FSharp.TypeProviders.SDK.git
+	branch = master
