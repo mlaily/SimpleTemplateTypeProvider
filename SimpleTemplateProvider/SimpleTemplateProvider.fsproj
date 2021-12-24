@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\FSharp.TypeProviders.SDK\src\ProvidedTypes.fsi" Link="ProvidedTypes.fsi" />
+    <Compile Include="..\FSharp.TypeProviders.SDK\src\ProvidedTypes.fs" Link="ProvidedTypes.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Node.fs" />
+    <Compile Include="TemplatingInternals.fs" />
+    <Compile Include="Utilities.fs" />
+    <Compile Include="Path.fs" />
+    <Compile Include="Parsing.fs" />
+    <Compile Include="ConvertExpr.fs" />
+    <Compile Include="CodeGen.fs" />
+    <Compile Include="Provider.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.39" />
+  </ItemGroup>
+
+</Project>
