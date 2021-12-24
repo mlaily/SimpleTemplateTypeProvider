@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SimpleTemplateProvider", "SimpleTemplateProvider\SimpleTemplateProvider.fsproj", "{A822C02A-8433-43F1-944E-548458AD985A}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "SimpleTemplateProvider", "SimpleTemplateProvider\SimpleTemplateProvider.fsproj", "{A822C02A-8433-43F1-944E-548458AD985A}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "SimpleTemplateProvider.Tests", "SimpleTemplateProvider.Tests\SimpleTemplateProvider.Tests.fsproj", "{59378A4B-EE04-4F02-816D-783CE7A9E314}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{A822C02A-8433-43F1-944E-548458AD985A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A822C02A-8433-43F1-944E-548458AD985A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A822C02A-8433-43F1-944E-548458AD985A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59378A4B-EE04-4F02-816D-783CE7A9E314}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59378A4B-EE04-4F02-816D-783CE7A9E314}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59378A4B-EE04-4F02-816D-783CE7A9E314}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59378A4B-EE04-4F02-816D-783CE7A9E314}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
