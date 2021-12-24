@@ -2,6 +2,6 @@
 
 type MyTemplate = SimpleTemplateProvider.Template<"<div>{{hole1}}</div>">
 
-let instance = MyTemplate("a")
+let templated = MyTemplate("a").Value
 
-printfn "holes: %A" instance.Result
+printfn "Result: %A" templated

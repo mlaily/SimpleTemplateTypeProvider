@@ -23,6 +23,7 @@ module TemplateImplementation =
         HoleRegex.Matches(template)
         |> Seq.cast
         |> Seq.map getMatchValue
+        |> Seq.distinct
     
     let replaceHoles template (valuesMap: Map<string, string>) =
         HoleRegex.Replace(template, fun m ->
@@ -35,7 +36,12 @@ type Templated(template: string, holeNames: string[], holeValues: string[]) =
     let valuesMap = (holeNames, holeValues) ||> Array.zip |> Map.ofArray
     /// Gets the templated value, that is,
     /// the template with its holes filled with the provided values.
-    member val Result: string = TemplateImplementation.replaceHoles template valuesMap
+    member val Value: string = TemplateImplementation.replaceHoles template valuesMap
+
+type TemplateSource =
+    | Auto = 0
+    | Inline = 1
+    | File = 2
 
 [<TypeProvider>]
 type TemplatingProvider (config: TypeProviderConfig) as this =
@@ -57,19 +63,33 @@ A path to a template file can also be provided instead of the template value."""
         let filePathOrStringParam = ProvidedStaticParameter("filePathOrString", typeof<string>) 
         filePathOrStringParam.AddXmlDoc("Template value, or path to a template file.")
 
+        // The default value has to be an int to be consistent with the way the type provider
+        // deals with enum static parameters (we receive them as ints...)
+        let sourceParam = ProvidedStaticParameter("source", typeof<TemplateSource>, int TemplateSource.Auto)
+
         templateType.DefineStaticParameters(
-            [ filePathOrStringParam ],
+            [ filePathOrStringParam; sourceParam ],
             fun typeName staticParams ->
                 match staticParams with
-                | [| :? string as filePathOrString |] ->
+                // source is an int because apparently the type provider does not
+                // support enums very well and gives us int values instead.
+                | [| :? string as filePathOrString; :? int as source |] ->
 
+                    let source = enum<TemplateSource>(source)
                     Debug.print $"filePathOrString={filePathOrString}"
+                    Debug.print $"source={source}"
 
                     let template =
-                        if filePathOrString.Contains("<") then filePathOrString
-                        else
+                        let loadFile () =
                             let fullPath = Path.Combine(config.ResolutionFolder, filePathOrString)
                             File.ReadAllText(fullPath, Encoding.UTF8)
+                        match source with
+                        | TemplateSource.Inline -> filePathOrString
+                        | TemplateSource.File -> loadFile ()
+                        | TemplateSource.Auto ->
+                            if filePathOrString.Contains("<") then filePathOrString
+                            else loadFile ()
+                        | _ -> failwith $"Unexpected enum value for {nameof(TemplateSource)}: {source}"
 
                     Debug.print $"template={template}"
 
@@ -91,7 +111,7 @@ A path to a template file can also be provided instead of the template value."""
                     parameterizedType.AddMember(ctor)
                     parameterizedType
 
-                | x -> failwith $"Unexpected static parameters value: {x}"
+                | x -> failwith $"Unexpected static parameters value: %A{x}"
             )
         this.AddNamespace(ns, [templateType])
         with ex ->
