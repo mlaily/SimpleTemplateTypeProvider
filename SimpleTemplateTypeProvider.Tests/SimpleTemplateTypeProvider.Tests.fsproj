@@ -21,7 +21,7 @@
     <PackageReference Include="Expecto" Version="9.*" />
     <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.*" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
-    <ProjectReference Include="..\SimpleTemplateProvider\SimpleTemplateProvider.fsproj" />
+    <ProjectReference Include="..\SimpleTemplateTypeProvider\SimpleTemplateTypeProvider.fsproj" />
     <PackageReference Update="FSharp.Core" Version="6.0.1" />
   </ItemGroup>
 </Project>

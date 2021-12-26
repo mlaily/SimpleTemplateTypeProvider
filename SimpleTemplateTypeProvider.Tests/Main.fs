@@ -1,4 +1,4 @@
-﻿module SimpleTemplateProvider.Tests
+﻿module SimpleTemplateTypeProvider.Tests
 open Expecto
 
 [<EntryPoint>]

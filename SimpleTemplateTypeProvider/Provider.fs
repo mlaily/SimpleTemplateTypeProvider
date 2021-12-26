@@ -1,4 +1,4 @@
-﻿namespace SimpleTemplateProvider
+﻿namespace SimpleTemplateTypeProvider
 
 open ProviderImplementation.ProvidedTypes
 open FSharp.Quotations
@@ -47,7 +47,7 @@ type TemplateSource =
 type TemplatingProvider (config: TypeProviderConfig) as this =
     inherit TypeProviderForNamespaces(config)
 
-    let ns = "SimpleTemplateProvider"
+    let ns = "SimpleTemplateTypeProvider"
     let ass = Assembly.GetExecutingAssembly()
 
     do try

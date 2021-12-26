@@ -4,9 +4,9 @@ Inspired by WebSharper and Bolero templates, but way simpler.
 Usage:
 
 ```fsharp
-#r "SimpleTemplateProvider.dll"
+#r "SimpleTemplateTypeProvider.dll"
 
-type MyTemplate = SimpleTemplateProvider.Template<"<div>{{hole}}</div>">
+type MyTemplate = SimpleTemplateTypeProvider.Template<"<div>{{hole}}</div>">
 
 let templated = MyTemplate("value").Value // <div>value</div>
 ```

@@ -1,7 +1,7 @@
 module ProviderTests
 
 open Expecto
-open SimpleTemplateProvider
+open SimpleTemplateTypeProvider
 
 type NoHoleInline = Template<"noHole", source=TemplateSource.Inline>
 type OneHoleInline = Template<"<p>{{hole}}</p>">
