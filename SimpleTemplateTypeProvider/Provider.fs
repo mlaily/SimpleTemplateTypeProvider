@@ -9,9 +9,9 @@ open System.Text.RegularExpressions
 open System.Text
 open System.Diagnostics
 
-[<Conditional("DEBUG")>]
-module Debug =
-    let print a = printfn $"Provider-Debug: {a}"
+type Debug =
+    [<Conditional("DEBUG")>]
+    static member print a = printfn $"Provider-Debug: {a}"
 
 module TemplateImplementation =
 
