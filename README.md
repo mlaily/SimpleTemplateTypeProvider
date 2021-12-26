@@ -9,9 +9,9 @@ Usage:
 ```fsharp
 #r "SimpleTemplateTypeProvider.dll"
 
-type MyTemplate = SimpleTemplateTypeProvider.Template<"<div>{{hole}}</div>">
+type MyTemplate = SimpleTemplateTypeProvider.Template<"""<div style="{{style}}">{{content}}</div>""">
 
-let templated = MyTemplate("value").Value // <div>value</div>
+let templated = MyTemplate("color: red", "message").Value // <div style="color: red">message</div>
 ```
 
 The provider supports two static parameters:
