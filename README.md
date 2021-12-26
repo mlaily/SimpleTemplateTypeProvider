@@ -1,6 +1,9 @@
 # Simple Template Type Provider
 Inspired by WebSharper and Bolero templates, but way simpler.
 
+[![Nuget](https://img.shields.io/nuget/v/SimpleTemplateTypeProvider)](https://www.nuget.org/packages/SimpleTemplateTypeProvider)
+
+
 Usage:
 
 ```fsharp

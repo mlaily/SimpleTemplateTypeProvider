@@ -5,6 +5,12 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <DefineConstants>NO_GENERATIVE</DefineConstants>
+    <Authors>Melvyn Laïly</Authors>
+    <Description>An F# type provider for simple but strongly typed text templates.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/mlaily/SimpleTemplateTypeProvider</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mlaily/SimpleTemplateTypeProvider</RepositoryUrl>
+    <PackageTags>f#;fsharp;provider;typeprovider;template</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
