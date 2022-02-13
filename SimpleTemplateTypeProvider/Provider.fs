@@ -17,7 +17,7 @@ module TemplateImplementation =
 
     let HoleRegex = Regex(@"{{(\w+)}}", RegexOptions.Compiled)
 
-    let getMatchValue (m: Match) = m.Groups[1].Value.Trim()  
+    let getMatchValue (m: Match) = m.Groups[1].Value.Trim()
 
     let parseHoles template =
         HoleRegex.Matches(template)
@@ -67,6 +67,29 @@ A path to a template file can also be provided instead of the template value."""
         // deals with enum static parameters (we receive them as ints...)
         let sourceParam = ProvidedStaticParameter("source", typeof<TemplateSource>, int TemplateSource.Auto)
 
+        let setupWatcher fullPath =
+            let watcher = new FileSystemWatcher(
+                Path = Path.GetDirectoryName fullPath,
+                Filter = Path.GetFileName fullPath,
+                NotifyFilter = (NotifyFilters.FileName
+                    ||| NotifyFilters.LastWrite
+                    ||| NotifyFilters.Size
+                    ||| NotifyFilters.DirectoryName
+                    ||| NotifyFilters.Security
+                    ||| NotifyFilters.Attributes
+                    ||| NotifyFilters.CreationTime),
+                EnableRaisingEvents = true)
+
+            let onChange e =
+                Debug.print $"File {fullPath} has changed. Invalidating type provider..."
+                this.Invalidate()
+                watcher.Dispose()
+
+            watcher.Changed.Add(onChange)
+            watcher.Renamed.Add(onChange)
+            watcher.Deleted.Add(onChange)
+            watcher.Created.Add(onChange)
+
         templateType.DefineStaticParameters(
             [ filePathOrStringParam; sourceParam ],
             fun typeName staticParams ->
@@ -79,9 +102,11 @@ A path to a template file can also be provided instead of the template value."""
                     Debug.print $"filePathOrString={filePathOrString}"
                     Debug.print $"source={source}"
 
+                    let fullPath = Path.Combine(config.ResolutionFolder, filePathOrString)
+
                     let template =
                         let loadFile () =
-                            let fullPath = Path.Combine(config.ResolutionFolder, filePathOrString)
+                            setupWatcher fullPath
                             File.ReadAllText(fullPath, Encoding.UTF8)
                         match source with
                         | TemplateSource.Inline -> filePathOrString
