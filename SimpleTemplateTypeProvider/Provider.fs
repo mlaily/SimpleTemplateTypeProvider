@@ -9,7 +9,7 @@ open System.Text.RegularExpressions
 open System.Text
 open System.Diagnostics
 
-type Debug =
+type internal Debug =
     [<Conditional("DEBUG")>]
     static member print a = printfn $"Provider-Debug: {a}"
 
@@ -69,8 +69,8 @@ A path to a template file can also be provided instead of the template value."""
 
         let setupWatcher fullPath =
             let watcher = new FileSystemWatcher(
-                Path = Path.GetDirectoryName fullPath,
-                Filter = Path.GetFileName fullPath,
+                Path = Path.GetDirectoryName(fullPath : string),
+                Filter = Path.GetFileName(fullPath : string),
                 NotifyFilter = (NotifyFilters.FileName
                     ||| NotifyFilters.LastWrite
                     ||| NotifyFilters.Size
@@ -93,55 +93,58 @@ A path to a template file can also be provided instead of the template value."""
         templateType.DefineStaticParameters(
             [ filePathOrStringParam; sourceParam ],
             fun typeName staticParams ->
-                match staticParams with
-                // source is an int because apparently the type provider does not
-                // support enums very well and gives us int values instead.
-                | [| :? string as filePathOrString; :? int as source |] ->
+                try
+                    match staticParams with
+                    // source is an int because apparently the type provider does not
+                    // support enums very well and gives us int values instead.
+                    | [| :? string as filePathOrString; :? int as source |] ->
 
-                    let source = enum<TemplateSource>(source)
-                    Debug.print $"filePathOrString={filePathOrString}"
-                    Debug.print $"source={source}"
+                        let source = enum<TemplateSource>(source)
+                        Debug.print $"filePathOrString={filePathOrString}"
+                        Debug.print $"source={source}"
 
-                    let fullPath = Path.Combine(config.ResolutionFolder, filePathOrString)
+                        let template =
+                            let loadFile () =
+                                let fullPath = Path.Combine(config.ResolutionFolder, filePathOrString)
+                                setupWatcher fullPath
+                                File.ReadAllText(fullPath, Encoding.UTF8)
+                            match source with
+                            | TemplateSource.Inline -> filePathOrString
+                            | TemplateSource.File -> loadFile ()
+                            | TemplateSource.Auto ->
+                                if filePathOrString.Contains("<") then filePathOrString
+                                else loadFile ()
+                            | _ -> failwith $"Unexpected enum value for {nameof(TemplateSource)}: {source}"
 
-                    let template =
-                        let loadFile () =
-                            setupWatcher fullPath
-                            File.ReadAllText(fullPath, Encoding.UTF8)
-                        match source with
-                        | TemplateSource.Inline -> filePathOrString
-                        | TemplateSource.File -> loadFile ()
-                        | TemplateSource.Auto ->
-                            if filePathOrString.Contains("<") then filePathOrString
-                            else loadFile ()
-                        | _ -> failwith $"Unexpected enum value for {nameof(TemplateSource)}: {source}"
+                        Debug.print $"template={template}"
 
-                    Debug.print $"template={template}"
+                        let holes =
+                            TemplateImplementation.parseHoles template
+                            |> Array.ofSeq
 
-                    let holes =
-                        TemplateImplementation.parseHoles template
-                        |> Array.ofSeq
+                        Debug.print $"holes=%A{holes}"
 
-                    Debug.print $"holes=%A{holes}"
+                        let parameterizedType = ProvidedTypeDefinition(ass, ns, typeName, Some typeof<Templated>)
 
-                    let parameterizedType = ProvidedTypeDefinition(ass, ns, typeName, Some typeof<Templated>)
+                        let ctor =
+                            ProvidedConstructor(
+                                [ for hole in holes -> ProvidedParameter(hole, typeof<string>) ],
+                                fun args ->
+                                    let argValues = Expr.NewArray(typeof<string>, args)
+                                    <@@ Templated(template, holes, %%argValues) @@>)
 
-                    let ctor =
-                        ProvidedConstructor(
-                            [ for hole in holes -> ProvidedParameter(hole, typeof<string>) ],
-                            fun args ->
-                                let argValues = Expr.NewArray(typeof<string>, args)
-                                <@@ Templated(template, holes, %%argValues) @@>)
+                        parameterizedType.AddMember(ctor)
+                        parameterizedType
 
-                    parameterizedType.AddMember(ctor)
-                    parameterizedType
-
-                | x -> failwith $"Unexpected static parameters value: %A{x}"
+                    | x -> failwith $"Unexpected static parameters value: %A{x}"
+                with ex ->
+                    // Output the full exception, with the stack etc.
+                    failwith $"{ex}"
             )
         this.AddNamespace(ns, [templateType])
         with ex ->
             // Output the full exception, with the stack etc.
             failwith $"{ex}"
 
-[<TypeProviderAssembly>]
+[<assembly: TypeProviderAssembly>]
 do ()

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
 
@@ -15,13 +15,11 @@
     <Compile Include="Main.fs" />
   </ItemGroup>
 
-  <ItemGroup />
-
   <ItemGroup>
-    <PackageReference Include="Expecto" Version="9.*" />
+    <PackageReference Include="Expecto" Version="10.2.3" />
     <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.*" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <ProjectReference Include="..\SimpleTemplateTypeProvider\SimpleTemplateTypeProvider.fsproj" />
-    <PackageReference Update="FSharp.Core" Version="6.0.1" />
+    <PackageReference Update="FSharp.Core" Version="9.0.201" />
   </ItemGroup>
 </Project>
