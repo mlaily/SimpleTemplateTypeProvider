@@ -13,7 +13,7 @@
     <PackageProjectUrl>https://github.com/mlaily/SimpleTemplateTypeProvider</PackageProjectUrl>
     <RepositoryUrl>https://github.com/mlaily/SimpleTemplateTypeProvider</RepositoryUrl>
     <PackageTags>f#;fsharp;provider;typeprovider;template</PackageTags>
-    <VersionPrefix>1.2.0.0</VersionPrefix>
+    <VersionPrefix>1.3.0.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>

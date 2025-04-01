@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="Expecto" Version="10.2.3" />
-    <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.*" />
+    <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.15.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <ProjectReference Include="..\SimpleTemplateTypeProvider\SimpleTemplateTypeProvider.fsproj" />
     <PackageReference Update="FSharp.Core" Version="9.0.201" />

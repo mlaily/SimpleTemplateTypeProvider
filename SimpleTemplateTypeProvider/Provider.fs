@@ -67,29 +67,6 @@ A path to a template file can also be provided instead of the template value."""
         // deals with enum static parameters (we receive them as ints...)
         let sourceParam = ProvidedStaticParameter("source", typeof<TemplateSource>, int TemplateSource.Auto)
 
-        let setupWatcher fullPath =
-            let watcher = new FileSystemWatcher(
-                Path = Path.GetDirectoryName(fullPath : string),
-                Filter = Path.GetFileName(fullPath : string),
-                NotifyFilter = (NotifyFilters.FileName
-                    ||| NotifyFilters.LastWrite
-                    ||| NotifyFilters.Size
-                    ||| NotifyFilters.DirectoryName
-                    ||| NotifyFilters.Security
-                    ||| NotifyFilters.Attributes
-                    ||| NotifyFilters.CreationTime),
-                EnableRaisingEvents = true)
-
-            let onChange e =
-                Debug.print $"File {fullPath} has changed. Invalidating type provider..."
-                this.Invalidate()
-                watcher.Dispose()
-
-            watcher.Changed.Add(onChange)
-            watcher.Renamed.Add(onChange)
-            watcher.Deleted.Add(onChange)
-            watcher.Created.Add(onChange)
-
         templateType.DefineStaticParameters(
             [ filePathOrStringParam; sourceParam ],
             fun typeName staticParams ->
@@ -102,6 +79,29 @@ A path to a template file can also be provided instead of the template value."""
                         let source = enum<TemplateSource>(source)
                         Debug.print $"filePathOrString={filePathOrString}"
                         Debug.print $"source={source}"
+
+                        let setupWatcher fullPath =
+                            let watcher = new FileSystemWatcher(
+                                Path = Path.GetDirectoryName(fullPath: string),
+                                Filter = Path.GetFileName(fullPath: string),
+                                NotifyFilter = (NotifyFilters.FileName
+                                    ||| NotifyFilters.LastWrite
+                                    ||| NotifyFilters.Size
+                                    ||| NotifyFilters.DirectoryName
+                                    ||| NotifyFilters.Security
+                                    ||| NotifyFilters.Attributes
+                                    ||| NotifyFilters.CreationTime),
+                                EnableRaisingEvents = true)
+
+                            let onChange e =
+                                Debug.print $"File {fullPath} has changed. Invalidating type provider..."
+                                this.Invalidate()
+                                watcher.Dispose()
+
+                            watcher.Changed.Add(onChange)
+                            watcher.Renamed.Add(onChange)
+                            watcher.Deleted.Add(onChange)
+                            watcher.Created.Add(onChange)
 
                         let template =
                             let loadFile () =
@@ -126,14 +126,25 @@ A path to a template file can also be provided instead of the template value."""
 
                         let parameterizedType = ProvidedTypeDefinition(ass, ns, typeName, Some typeof<Templated>)
 
-                        let ctor =
-                            ProvidedConstructor(
-                                [ for hole in holes -> ProvidedParameter(hole, typeof<string>) ],
-                                fun args ->
-                                    let argValues = Expr.NewArray(typeof<string>, args)
-                                    <@@ Templated(template, holes, %%argValues) @@>)
+                        let holesParameters = [ for hole in holes -> ProvidedParameter(hole, typeof<string>) ]
+                        let invokeApplyTemplate =
+                            fun args ->
+                                let argValues = Expr.NewArray(typeof<string>, args)
+                                <@@ Templated(template, holes, %%argValues) @@>
+
+                        let ctor = ProvidedConstructor(holesParameters, invokeApplyTemplate)
+
+                        let applyTemplateMethod =
+                            ProvidedMethod(
+                                "ApplyTemplate",
+                                holesParameters,
+                                typeof<Templated>,
+                                invokeApplyTemplate,
+                                isStatic = true)
 
                         parameterizedType.AddMember(ctor)
+                        parameterizedType.AddMember(applyTemplateMethod)
+
                         parameterizedType
 
                     | x -> failwith $"Unexpected static parameters value: %A{x}"

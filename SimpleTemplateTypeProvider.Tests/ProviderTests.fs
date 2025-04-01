@@ -52,3 +52,23 @@ let fileTests =
         let actual = RepeatedHoleFile("a").Value
         Expect.equal actual "a-a" "Failure."
   ]
+
+[<Tests>]
+let applyTemplateMethodTests =
+  testList "ApplyTemplate method" [
+    testCase "A template with no hole can be used." <| fun _ ->
+        let actual = NoHoleInline.ApplyTemplate().Value
+        Expect.equal actual "noHole" "Failure."
+
+    testCase "A template can be used" <| fun _ ->
+        let actual = OneHoleInline.ApplyTemplate("value").Value
+        Expect.equal actual "<p>value</p>" "Failure."
+
+    testCase "A template with two holes can be used" <| fun _ ->
+        let actual = TwoHolesInline.ApplyTemplate("a", "b").Value
+        Expect.equal actual "<p>axb</p>" "Failure."
+
+    testCase "A template with repeated holes can be used" <| fun _ ->
+        let actual = RepeatedHoleInline.ApplyTemplate("a").Value
+        Expect.equal actual "<p>axa</p>" "Failure."
+  ]
